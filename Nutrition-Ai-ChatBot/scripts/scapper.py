@@ -306,68 +306,10 @@ def save_csv_file(file_name):
 # save_csv_file(file_name='new_scrapped_food_data.csv')
 # print("CSV file has been created for Food Successfully.")
 
-activities = [
-    "Running", "Swimming", "Cycling", "Walking", "Hiking", "Dancing", "Jumping Jacks", "Push-ups", "Pull-ups",
-    "Squats", "Lunges", "Planks", "Yoga", "Pilates", "Zumba", "Kickboxing", "Rowing", "Kayaking", "Canoeing",
-    "Rock Climbing", "Ice Skating", "Roller Skating", "Rollerblading", "Skiing", "Snowboarding", "Surfing",
-    "Windsurfing", "Kite Surfing", "Stand-Up Paddleboarding", "Horseback Riding", "Martial Arts", "Tai Chi",
-    "Gymnastics", "Weightlifting", "Bodybuilding", "Powerlifting", "CrossFit", "HIIT", "Tabata", "TRX Training",
-    "Boxing", "Judo", "Karate", "Jiu-Jitsu", "Wrestling", "Fencing", "Archery", "Shooting", "Darts", "Badminton",
-    "Tennis", "Table Tennis", "Squash", "Racquetball", "Basketball", "Football", "Soccer", "Volleyball",
-    "Beach Volleyball", "Baseball", "Softball", "Cricket", "Rugby", "American Football", "Lacrosse", "Field Hockey",
-    "Ice Hockey", "Golf", "Mini Golf", "Frisbee", "Ultimate Frisbee", "Disc Golf", "Bocce", "Bowling", "Skateboarding",
-    "Parkour", "Handball", "Dodgeball", "Netball", "Paddle Tennis", "Pickleball", "Futsal", "Sepak Takraw",
-    "Cheerleading", "Trampoline", "Slacklining", "Orienteering", "Geocaching", "Scuba Diving", "Snorkeling",
-    "Spearfishing", "Fishing", "Hunting", "Archery Hunting", "Sailing", "Motorboating", "Jet Skiing", "Water Polo",
-    "Rowing Machine", "Elliptical Trainer", "Stair Climbing", "Treadmill Running", "Treadmill Walking",
-    "Stationary Cycling", "Spin Class", "Aqua Aerobics", "Water Aerobics", "Ballet", "Tap Dance", "Jazz Dance",
-    "Hip Hop Dance", "Contemporary Dance", "Ballroom Dancing", "Latin Dance", "Swing Dance", "Square Dance",
-    "Folk Dance", "Breakdancing", "Capoeira", "Pole Dancing", "Barre", "Step Aerobics", "Kickboxing Aerobics",
-    "Cardio Dance", "Jazzercise", "Stretching", "Foam Rolling", "Resistance Band Training", "Medicine Ball Training",
-    "Kettlebell Training", "Sandbag Training", "Battle Ropes", "Sledgehammer Training", "Tire Flipping",
-    "Bodyweight Training", "Calisthenics", "Functional Training", "Agility Training", "Balance Training",
-    "Core Training", "Strength Training", "Endurance Training", "Flexibility Training", "Speed Training",
-    "Plyometrics", "Isometric Exercises", "Dynamic Stretching", "Static Stretching", "Breathing Exercises",
-    "Mindfulness Meditation", "Guided Meditation", "Progressive Muscle Relaxation", "Visual Imagery", "Biofeedback",
-    "Sauna", "Steam Room", "Cold Plunge", "Contrast Bath Therapy", "Cryotherapy", "Hot Yoga", "Bikram Yoga",
-    "Aerial Yoga", "Acro Yoga", "Prenatal Yoga", "Postnatal Yoga", "Kids Yoga", "Chair Yoga", "Restorative Yoga",
-    "Yin Yoga", "Ashtanga Yoga", "Vinyasa Yoga", "Hatha Yoga", "Kundalini Yoga", "Jivamukti Yoga", "Power Yoga",
-    "Forest Bathing", "Trail Running", "Obstacle Course Racing", "Mud Runs", "Color Runs", "Zombie Runs",
-    "Charity Walks", "Charity Runs", "Dog Walking", "Pet Agility", "Dog Frisbee", "Horse Jumping", "Polo",
-    "Dressage", "Rodeo", "Bull Riding", "Barrel Racing", "Equestrian Vaulting", "Reining", "Team Penning",
-    "Cutting Horse", "Gymkhana", "Working Equitation", "Choreographed Riding", "Mounted Archery", "Trail Riding",
-    "Cross-Country Riding", "Endurance Riding", "Show Jumping", "Eventing", "Bicycle Touring", "Mountain Biking",
-    "BMX", "Cyclocross", "Track Cycling", "Indoor Cycling", "Peloton", "Triathlon", "Duathlon", "Aquathlon",
-    "Adventure Racing", "Ultra Marathon", "Half Marathon", "Marathon", "5K Run", "10K Run", "Relay Races",
-    "Track and Field", "Pole Vault", "High Jump", "Long Jump", "Triple Jump", "Discus Throw", "Shot Put",
-    "Javelin Throw", "Hammer Throw", "Decathlon", "Heptathlon", "Pentathlon", "Modern Pentathlon", "Tug of War",
-    "Arm Wrestling", "Strongman Competitions", "Highland Games", "Caber Toss", "Stone Put", "Weight Over Bar",
-    "Sheaf Toss", "Weight for Distance", "Hammer Throw (Highland)", "Athletic Training", "Sports Specific Training",
-    "Recovery Workouts", "Cool Down Exercises", "Warm-Up Exercises", "Reflex Training", "Reaction Time Training",
-    "Speed Bag Training", "Double-End Bag Training", "Heavy Bag Training", "Muay Thai", "Savate", "Sanda",
-    "Wing Chun", "Krav Maga", "Hapkido", "Aikido", "Kendo", "Iaido", "Kenjutsu", "Bartitsu", "Sambo", "Pankration",
-    "Glima", "Lethwei", "Silat", "Taekkyeon", "Sambo", "Bando", "Banshay", "Kuntao", "Panantukan", "Eskrima",
-    "Kali", "Arnis", "Jeet Kune Do", "Pradal Serey", "Yaw-Yan", "Yaw-Yan Adarna", "Yaw-Yan Buhawi", "Bokator",
-    "Battle Hurdle", "Acrobatic Gymnastics", "Aerobic Gymnastics", "Tumbling", "Trampolining", "Rhythmic Gymnastics",
-    "Artistic Gymnastics", "Parkour", "Freerunning", "Military Obstacle Course", "Civilian Obstacle Course",
-    "Functional Fitness", "Group Fitness", "Small Group Training", "Personal Training", "Online Fitness Classes",
-    "Fitness Challenges", "Corporate Wellness Programs", "Workplace Fitness", "Community Fitness Programs",
-    "School Fitness Programs", "Youth Fitness Programs", "Senior Fitness Programs", "Adaptive Fitness Programs",
-    "Therapeutic Fitness", "Rehabilitation Exercises", "Prehabilitation Exercises", "Corrective Exercises",
-    "Performance Enhancement Training", "Sports Performance Training", "Athlete Development Programs",
-    "Recreational Sports", "Team Sports", "Individual Sports", "Extreme Sports", "Adventurous Sports",
-    "Outdoor Adventure Activities", "Indoor Sports", "Indoor Activities", "Summer Sports", "Winter Sports",
-    "Water Sports", "Land Sports", "Air Sports", "Motor Sports", "Electronic Sports (Esports)", "Video Gaming",
-    "Virtual Reality Fitness", "Augmented Reality Fitness", "Exergaming", "Dance Dance Revolution", "Just Dance",
-    "Wii Fit", "Ring Fit Adventure", "Zombies, Run!", "FitXR", "Supernatural (VR Fitness)", "BoxVR", "Beat Saber",
-    "Pistol Whip", "The Climb", "The Climb 2", "Sprint Vector", "Hot Squat", "Thrill of the Fight", "Creed: Rise to Glory",
-    "Knockout League", "Ninja Legends", "Gorn", "Boneworks", "Blade & Sorcery", "Holopoint", "HoloFit", "VZfit",
-    "OhShape", "Synth Riders", "Audica", "Dance Central VR", "Boxing Kings VR", "Racket: Nx", "Eleven Table Tennis",
-    "VR Sports Challenge", "VR Regatta", "SportsBar VR", "Cloudlands: VR Minigolf", "First Person Tennis",
-    "Racket Fury", "Chess Ultra VR", "Catan VR", "PokerStars VR", "Topgolf with Pro Putt", "Mini Motor Racing X",
-    "Radial-G: Racing Revolved", "V-Racer Hoverbike", "Touring Karts", "Dash Dash World", "Assetto Corsa",
-    "iRacing", "rFactor", "Gran Turismo Sport", "Forza Motorsport", "F1 2020", "MotoGP", "Dirt Rally", "WRC 8",
-    "Project Cars"]
+
+res = requests.get('https://api.api-ninjas.com/v1/caloriesburnedactivities',
+                   headers={'X-Api-Key': 'yvU4M/XVCe1IOTph1K4qWw==61j63Nj674hzMO5s'})
+activities = res.json()['activities']
 activity_api_url = 'https://api.api-ninjas.com/v1/caloriesburned?activity={}'
 
 
@@ -382,7 +324,7 @@ def make_call_activities(act):
 
 
 def get_activities_info():
-    for act in activities:
+    for act in activities[1:]:
         res = make_call_activities(act)
         result_data.extend(res)
     return result_data
@@ -391,5 +333,6 @@ def get_activities_info():
 get_activities_info()
 save_csv_file(file_name='new_scrapped_exc_data.csv')
 print("CSV file has been created for Food Successfully.")
+
 
 
