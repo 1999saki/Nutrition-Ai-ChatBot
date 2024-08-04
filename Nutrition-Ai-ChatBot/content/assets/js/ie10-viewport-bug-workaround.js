@@ -18,8 +18,8 @@ const createChatLi = (message, className) => {
 }
 
 const generateResponse = (chatElement,inlinemsg) => {
-    const API_URL = "accounts/chatbot/"; // Django URL for chatbot
-
+    const endpoint = "/accounts/chatbot/"; // Django URL for chatbot
+    const API_URL = `${window.location.origin}${endpoint}`;
     const messageElement = chatElement.querySelector("p");
     console.log(messageElement);
     // Define the properties and message for the API request
