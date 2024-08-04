@@ -1,6 +1,5 @@
 import json
 
-import openai
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -346,8 +345,7 @@ class LogOutView(LoginRequiredMixin, BaseLogoutView):
     template_name = 'accounts/log_out.html'
 
 
-
-# data = {'age': None, 'veg_non_veg': None, 'weight': None, 'height': None}
+data = {'age': None, 'veg_non_veg': None, 'weight': None, 'height': None}
 
 #
 # def update_and_check_data(input_dict=None):
