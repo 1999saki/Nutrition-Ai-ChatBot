@@ -346,10 +346,8 @@ class LogOutView(LoginRequiredMixin, BaseLogoutView):
     template_name = 'accounts/log_out.html'
 
 
-# Initialize the OpenAI API
-openai.api_key = "sk-proj-FRD3D3OT5vbF3kXE2u2OT3BlbkFJIE8rkLtM57kN0q6MpVCK"
 
-data = {'age': None, 'veg_non_veg': None, 'weight': None, 'height': None}
+# data = {'age': None, 'veg_non_veg': None, 'weight': None, 'height': None}
 
 #
 # def update_and_check_data(input_dict=None):
