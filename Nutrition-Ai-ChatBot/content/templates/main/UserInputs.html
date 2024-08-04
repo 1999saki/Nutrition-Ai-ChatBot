@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            max-width: 400px;
+            width: 100%;
+        }
+        .container input, .container button, .container .option, .container select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .container button {
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        .container button:hover {
+            background-color: #0056b3;
+        }
+        .hidden {
+            display: none;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .option input {
+            margin-left: 10px;
+        }
+        .gender-option, .goal-option {
+            display: inline-block;
+            width: 45%;
+            padding: 20px;
+            margin: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .gender-option input, .goal-option input {
+            display: none;
+        }
+        .gender-option.selected, .goal-option.selected {
+            border-color: #007BFF;
+            background-color: #e6f4ff;
+        }
+        .height-weight-input {
+            display: flex;
+            gap: 10px;
+        }
+        .height-weight-input div {
+            flex: 1;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .button-container button {
+            width: 48%;
+        }
+        .warning {
+            color: red;
+            font-size: 14px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="form1">
+        <h2>Hi, What Should We Call You?</h2>
+        <input type="text" id="nameInput" placeholder="Enter your name">
+        <p class="warning" id="nameWarning">Please enter your name.</p>
+        <div class="button-container">
+            <button class="hidden">Back</button>
+            <button onclick="validateForm1()">Next</button>
+        </div>
+    </div>
+
+    <div class="container hidden" id="form2">
+        <h2>What brings you here?</h2>
+        <p>This will help us personalise the advice for you. Select as many as applicable.</p>
+        <div class="goal-option" onclick="selectGoal('loss')">
+            <span>Weight Loss</span>
+            <input type="radio" name="goal" id="goalLoss" value="loss">
+        </div>
+        <div class="goal-option" onclick="selectGoal('gain')">
+            <span>Weight Gain</span>
+            <input type="radio" name="goal" id="goalGain" value="gain">
+        </div>
+        <div class="goal-option" onclick="selectGoal('maintain')">
+            <span>Weight Maintenance</span>
+            <input type="radio" name="goal" id="goalMaintain" value="maintain">
+        </div>
+        <p class="warning" id="goalWarning">Please select a goal.</p>
+        <div class="button-container">
+            <button onclick="showPreviousForm('form2', 'form1')">Back</button>
+            <button onclick="validateForm2()">Next</button>
+        </div>
+    </div>
+
+    <div class="container hidden" id="form3">
+        <h2>What’s your sex assigned at birth?</h2>
+        <p>We recognize your gender identity may differ from your birth sex, but our calorie calculations use birth sex for accuracy.</p>
+        <div class="gender-option" onclick="selectGender('male')">
+            <span>Male</span>
+            <input type="radio" name="gender" id="genderMale" value="male">
+        </div>
+        <div class="gender-option" onclick="selectGender('female')">
+            <span>Female</span>
+            <input type="radio" name="gender" id="genderFemale" value="female">
+        </div>
+        <p class="warning" id="genderWarning">Please select your gender.</p>
+        <div class="button-container">
+            <button onclick="showPreviousForm('form3', 'form2')">Back</button>
+            <button onclick="validateForm3()">Next</button>
+        </div>
+    </div>
+
+    <div class="container hidden" id="form4">
+        <h2>How old are you?</h2>
+        <input type="number" id="ageInput" placeholder="Enter your age">
+        <p class="warning" id="ageWarning">Please enter your age.</p>
+        <div class="button-container">
+            <button onclick="showPreviousForm('form4', 'form3')">Back</button>
+            <button onclick="validateForm4()">Next</button>
+        </div>
+    </div>
+
+    <div class="container hidden" id="form5">
+        <h2>What’s your height and weight?</h2>
+        <div class="height-weight-input">
+            <div>
+                <label for="height">Height</label>
+                <input type="number" id="heightInput" placeholder="cm">
+            </div>
+            <div>
+                <label for="weight">Weight</label>
+                <input type="number" id="weightInput" placeholder="kg">
+            </div>
+        </div>
+        <p class="warning" id="heightWeightWarning">Please enter your height and weight.</p>
+        <div class="button-container">
+            <button onclick="showPreviousForm('form5', 'form4')">Back</button>
+            <button onclick="validateForm5()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        function showNextForm(currentFormId, nextFormId) {
+            document.getElementById(currentFormId).classList.add('hidden');
+            document.getElementById(nextFormId).classList.remove('hidden');
+        }
+
+        function showPreviousForm(currentFormId, previousFormId) {
+            document.getElementById(currentFormId).classList.add('hidden');
+            document.getElementById(previousFormId).classList.remove('hidden');
+        }
+
+        function selectGender(gender) {
+            const maleOption = document.querySelector('.gender-option[onclick="selectGender(\'male\')"]');
+            const femaleOption = document.querySelector('.gender-option[onclick="selectGender(\'female\')"]');
+
+            maleOption.classList.remove('selected');
+            femaleOption.classList.remove('selected');
+
+            if (gender === 'male') {
+                maleOption.classList.add('selected');
+                document.getElementById('genderMale').checked = true;
+            } else {
+                femaleOption.classList.add('selected');
+                document.getElementById('genderFemale').checked = true;
+            }
+        }
+
+        function selectGoal(goal) {
+            const loss = document.querySelector('.goal-option[onclick="selectGoal(\'loss\')"]');
+            const gain = document.querySelector('.goal-option[onclick="selectGoal(\'gain\')"]');
+            const maintain = document.querySelector('.goal-option[onclick="selectGoal(\'maintain\')"]');
+
+            loss.classList.remove('selected');
+            gain.classList.remove('selected');
+            maintain.classList.remove('selected');
+
+            if (goal === 'loss') {
+                loss.classList.add('selected');
+                document.getElementById('goalLoss').checked = true;
+            } else if (goal === 'gain') {
+                gain.classList.add('selected');
+                document.getElementById('goalGain').checked = true;
+            } else {
+                maintain.classList.add('selected');
+                document.getElementById('goalMaintain').checked = true;
+            }
+        }
+
+        function validateForm1() {
+            const nameInput = document.getElementById('nameInput').value;
+            if (!nameInput) {
+                document.getElementById('nameWarning').style.display = 'block';
+            } else {
+                document.getElementById('nameWarning').style.display = 'none';
+                showNextForm('form1', 'form2');
+            }
+        }
+
+        function validateForm2() {
+            const goal = document.querySelector('input[name="goal"]:checked');
+            if (!goal) {
+                document.getElementById('goalWarning').style.display = 'block';
+            } else {
+                document.getElementById('goalWarning').style.display = 'none';
+                showNextForm('form2', 'form3');
+            }
+        }
+
+        function validateForm3() {
+            const gender = document.querySelector('input[name="gender"]:checked');
+            if (!gender) {
+                document.getElementById('genderWarning').style.display = 'block';
+            } else {
+                document.getElementById('genderWarning').style.display = 'none';
+                showNextForm('form3', 'form4');
+            }
+        }
+
+        function validateForm4() {
+            const ageInput = document.getElementById('ageInput').value;
+            if (!ageInput) {
+                document.getElementById('ageWarning').style.display = 'block';
+            } else {
+                document.getElementById('ageWarning').style.display = 'none';
+                showNextForm('form4', 'form5');
+            }
+        }
+
+        function validateForm5() {
+            const heightInput = document.getElementById('heightInput').value;
+            const weightInput = document.getElementById('weightInput').value;
+            if (!heightInput || !weightInput) {
+                document.getElementById('heightWeightWarning').style.display = 'block';
+            } else {
+                document.getElementById('heightWeightWarning').style.display = 'none';
+                submitForm();
+            }
+        }
+
+        function submitForm() {
+            const name = document.getElementById('nameInput').value;
+            const goal = document.querySelector('input[name="goal"]:checked').value;
+            const gender = document.querySelector('input[name="gender"]:checked').value;
+            const age = document.getElementById('ageInput').value;
+            const height = document.getElementById('heightInput').value;
+            const weight = document.getElementById('weightInput').value;
+
+            fetch('/submit-form/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: name,
+                    goal: goal,
+                    gender: gender,
+                    age: age,
+                    height: height,
+                    weight: weight,
+                }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/chat/';  // Fallback client-side redirection if server-side fails
+                } else {
+                    return response.json().then(data => {
+                        console.error('Error:', data);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+
+</body>
+</html>

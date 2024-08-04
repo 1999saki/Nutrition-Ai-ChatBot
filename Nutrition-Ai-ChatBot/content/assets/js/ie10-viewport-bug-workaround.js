@@ -1,28 +1,3 @@
-/*!
- * IE10 viewport hack for Surface/desktop Windows 8 bug
- * Copyright 2014-2017 The Bootstrap Authors
- * Copyright 2014-2017 Twitter, Inc.
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- */
-
-// See the Getting Started docs for more information:
-// https://getbootstrap.com/getting-started/#support-ie10-width
-
-(function () {
-  'use strict'
-
-  if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
-    var msViewportStyle = document.createElement('style')
-    msViewportStyle.appendChild(
-      document.createTextNode(
-        '@-ms-viewport{width:auto!important}'
-      )
-    )
-    document.head.appendChild(msViewportStyle)
-  }
-
-}())
-
 const chatbotToggler = document.querySelector(".chatbot-toggler");
 const closeBtn = document.querySelector(".close-btn");
 const chatbox = document.querySelector(".chatbox");
@@ -30,7 +5,6 @@ const chatInput = document.querySelector(".chat-input textarea");
 const sendChatBtn = document.querySelector(".chat-input span");
 
 let userMessage = null; // Variable to store user's message
-const API_KEY = "PASTE-YOUR-API-KEY"; // Paste your API key here
 const inputInitHeight = chatInput.scrollHeight;
 
 const createChatLi = (message, className) => {
@@ -43,30 +17,37 @@ const createChatLi = (message, className) => {
     return chatLi; // return chat <li> element
 }
 
-const generateResponse = (chatElement) => {
-    const API_URL = "https://api.openai.com/v1/chat/completions";
-    const messageElement = chatElement.querySelector("p");
+const generateResponse = (chatElement,inlinemsg) => {
+    const API_URL = "accounts/chatbot/"; // Django URL for chatbot
 
+    const messageElement = chatElement.querySelector("p");
+    console.log(messageElement);
     // Define the properties and message for the API request
     const requestOptions = {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${API_KEY}`
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": getCookie('csrftoken')  // Get CSRF token
         },
-        body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [{role: "user", content: userMessage}],
-        })
+        body: JSON.stringify({"message": inlinemsg})
     }
 
     // Send POST request to API, get response and set the reponse as paragraph text
-    fetch(API_URL, requestOptions).then(res => res.json()).then(data => {
-        messageElement.textContent = data.choices[0].message.content.trim();
-    }).catch(() => {
-        messageElement.classList.add("error");
-        messageElement.textContent = "Oops! Something went wrong. Please try again.";
-    }).finally(() => chatbox.scrollTo(0, chatbox.scrollHeight));
+    fetch(API_URL, requestOptions)
+        .then(res => res.json())
+        .then(data => {
+            if (data.response) {
+                messageElement.textContent = data.response;
+            } else {
+                messageElement.classList.add("error");
+                messageElement.textContent = "Oops! Something went wrong. Please try again.";
+            }
+        })
+        .catch(() => {
+            messageElement.classList.add("error");
+            messageElement.textContent = "Oops! Something went wrong. Please try again.";
+        })
+        .finally(() => chatbox.scrollTo(0, chatbox.scrollHeight));
 }
 
 const handleChat = () => {
@@ -80,13 +61,13 @@ const handleChat = () => {
     // Append the user's message to the chatbox
     chatbox.appendChild(createChatLi(userMessage, "outgoing"));
     chatbox.scrollTo(0, chatbox.scrollHeight);
-
+    console.log(userMessage);
     setTimeout(() => {
         // Display "Thinking..." message while waiting for the response
         const incomingChatLi = createChatLi("Thinking...", "incoming");
         chatbox.appendChild(incomingChatLi);
         chatbox.scrollTo(0, chatbox.scrollHeight);
-        generateResponse(incomingChatLi);
+        generateResponse(incomingChatLi,userMessage);
     }, 600);
 }
 
@@ -108,3 +89,36 @@ chatInput.addEventListener("keydown", (e) => {
 sendChatBtn.addEventListener("click", handleChat);
 closeBtn.addEventListener("click", () => document.body.classList.remove("show-chatbot"));
 chatbotToggler.addEventListener("click", () => document.body.classList.toggle("show-chatbot"));
+
+// Helper function to get CSRF token from cookie
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}

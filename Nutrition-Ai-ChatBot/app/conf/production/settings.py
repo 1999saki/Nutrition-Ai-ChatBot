@@ -8,9 +8,7 @@ CONTENT_DIR = join(BASE_DIR, 'content')
 SECRET_KEY = '3d305kajG5Jy8KBafCMpHwDIsNi0SqVaW'
 
 DEBUG = False
-ALLOWED_HOSTS = [
-    'example.com',
-]
+ALLOWED_HOSTS = ['194.238.22.155', '127.0.0.1']
 
 SITE_ID = 1
 

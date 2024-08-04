@@ -1,34 +1,44 @@
+import json
+
+import openai
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, REDIRECT_FIELD_NAME
-from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import (
     LogoutView as BaseLogoutView, PasswordChangeView as BasePasswordChangeView,
-    PasswordResetDoneView as BasePasswordResetDoneView, PasswordResetConfirmView as BasePasswordResetConfirmView,
+    PasswordResetDoneView as BasePasswordResetDoneView,
+    PasswordResetConfirmView as BasePasswordResetConfirmView,
 )
-from django.views.generic.base import TemplateView
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
-from django.utils.http import url_has_allowed_host_and_scheme as is_safe_url
 from django.utils.encoding import force_bytes
+from django.utils.http import url_has_allowed_host_and_scheme as is_safe_url
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import View, FormView
-from django.conf import settings
+from django.views.generic.base import TemplateView
 
-from .utils import (
-    send_activation_email, send_reset_password_email, send_forgotten_username_email, send_activation_change_email,
-)
 from .forms import (
     SignInViaUsernameForm, SignInViaEmailForm, SignInViaEmailOrUsernameForm, SignUpForm,
     RestorePasswordForm, RestorePasswordViaEmailOrUsernameForm, RemindUsernameForm,
-    ResendActivationCodeForm, ResendActivationCodeViaEmailForm, ChangeProfileForm, ChangeEmailForm,
+    ResendActivationCodeForm, ResendActivationCodeViaEmailForm, ChangeProfileForm,
+    ChangeEmailForm,
 )
 from .models import Activation
+# from .recipe_cleaner import *
+from .utils import (
+    send_activation_email, send_reset_password_email, send_forgotten_username_email,
+    send_activation_change_email,
+)
 
 
 class GuestOnlyView(View):
@@ -334,3 +344,175 @@ class LogOutConfirmView(LoginRequiredMixin, TemplateView):
 
 class LogOutView(LoginRequiredMixin, BaseLogoutView):
     template_name = 'accounts/log_out.html'
+
+
+# Initialize the OpenAI API
+openai.api_key = "sk-proj-FRD3D3OT5vbF3kXE2u2OT3BlbkFJIE8rkLtM57kN0q6MpVCK"
+
+data = {'age': None, 'veg_non_veg': None, 'weight': None, 'height': None}
+
+#
+# def update_and_check_data(input_dict=None):
+#     if input_dict is None:
+#         input_dict = {}
+#     global data
+#
+#     # Update the data dictionary with values from the input dictionary
+#     for key in data.keys():
+#         if key in input_dict and input_dict[key] is not None:
+#             data[key] = input_dict[key]
+#
+#     # Check for missing values
+#     missing_values = {key: value for key, value in data.items() if value is None}
+#
+#     if missing_values:
+#         # Construct a message for the missing values
+#         missing_fields = ', '.join(missing_values.keys())
+#         return False, f"Please provide the following values in valid format: {missing_fields}"
+#
+#     return True, "All values are present."
+
+###############################################################################
+
+from keras.models import load_model
+import random
+import pickle
+import nltk
+import numpy as np
+from nltk.stem import WordNetLemmatizer
+# from .recipe_cleaner import get_recipe
+from os.path import dirname, abspath, join
+
+BASE_DIR = dirname(dirname(abspath(__file__)))
+CONTENT_DIR = join(BASE_DIR, 'content/static')
+
+lemmatizer = WordNetLemmatizer()
+
+
+def getResponse(ints, intents_json):
+    tag = ints[0]["intent"]
+    list_of_intents = intents_json["intents"]
+    for i in list_of_intents:
+        if i["tag"] == tag:
+            result = random.choice(i["responses"])
+            break
+    return result
+
+
+def clean_up_sentence(sentence):
+    sentence_words = nltk.word_tokenize(sentence)
+    sentence_words = [lemmatizer.lemmatize(word.lower()) for word in sentence_words]
+    return sentence_words
+
+
+def bow(sentence, words, show_details=True):
+    # tokenize the pattern
+    sentence_words = clean_up_sentence(sentence)
+    # bag of words - matrix of N words, vocabulary matrix
+    bag = [0] * len(words)
+    for s in sentence_words:
+        for i, w in enumerate(words):
+            if w == s:
+                # assign 1 if current word is in the vocabulary position
+                bag[i] = 1
+                if show_details:
+                    print("found in bag: %s" % w)
+    return np.array(bag)
+
+
+def predict_class(sentence, model):
+    words = pickle.load(open(join(CONTENT_DIR, 'words.pkl'), "rb"))
+    classes = pickle.load(open(join(CONTENT_DIR, 'classes.pkl'), "rb"))
+
+    # filter out predictions below a threshold
+    p = bow(sentence, words, show_details=False)
+    res = model.predict(np.array([p]))[0]
+    ERROR_THRESHOLD = 0.25
+    results = [[i, r] for i, r in enumerate(res) if r > ERROR_THRESHOLD]
+    # sort by strength of probability
+    results.sort(key=lambda x: x[1], reverse=True)
+    return_list = []
+    for r in results:
+        return_list.append({"intent": classes[r[0]], "probability": str(r[1])})
+    return return_list
+
+
+def chatbot_response(user_message):
+    model = load_model(join(CONTENT_DIR, 'chatbot_model.h5'))
+
+    # Load and process the intents JSON file
+    data_file = open(join(CONTENT_DIR, 'intents.json')).read()
+    intents = json.loads(data_file)
+
+    # Rest of your existing code
+    if user_message.startswith('my name is'):
+        name = user_message[11:]
+        ints = predict_class(user_message, model)
+        res1 = getResponse(ints, intents)
+        res = res1.replace("{n}", name)
+    elif user_message.startswith('hi my name is'):
+        name = user_message[14:]
+        ints = predict_class(user_message, model)
+        res1 = getResponse(ints, intents)
+        res = res1.replace("{n}", name)
+    else:
+        ints = predict_class(user_message, model)
+        res = getResponse(ints, intents)
+    return res
+
+
+@csrf_exempt
+def chat_handler(request, data=None):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user_message = data.get("message")
+
+        # if "recipe" not in user_message:
+        response = chatbot_response(user_message)
+        # else:
+        #     response = generate_recipe(user_message)
+
+        # res, message = update_and_check_data()
+        # if not res:
+        #     return JsonResponse({'response': message})
+        # # user_input = data.get('message', '')
+        #
+        # # Determine which function to call based on user input
+        # if 'weight gain' in user_message.lower():
+        #     response = Weight_Gain()
+        # elif 'weight loss' in user_message.lower():
+        #     response = Weight_Loss()
+        # elif 'healthy' in user_message.lower():
+        #     response = Healthy()
+        # else:
+        #     response = "I don't understand. Can you please clarify?"
+
+        return JsonResponse({'response': response})
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+
+@csrf_exempt
+def submit_form(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        name = data.get('name')
+        goal = data.get('goal')
+        gender = data.get('gender')
+        age = data.get('age')
+        height = data.get('height')
+        weight = data.get('weight')
+
+        user, created = User.objects.get_or_create(username=name)
+
+        activation, created = Activation.objects.get_or_create(user=user)
+        activation.email = user.email
+        activation.age = age
+        activation.height = height
+        activation.goal = goal
+        activation.weight = weight
+        activation.gender = gender
+        activation.save()
+
+        return redirect('chat')
+
+    return JsonResponse({'status': 'fail'}, status=400)
