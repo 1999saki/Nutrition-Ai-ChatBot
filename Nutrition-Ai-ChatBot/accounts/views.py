@@ -33,7 +33,7 @@ from .forms import (
     ChangeEmailForm,
 )
 from .models import Activation
-# from .recipe_cleaner import *
+from .recipe_cleaner import *
 from .utils import (
     send_activation_email, send_reset_password_email, send_forgotten_username_email,
     send_activation_change_email,
@@ -462,11 +462,11 @@ def chat_handler(request, data=None):
     if request.method == 'POST':
         data = json.loads(request.body)
         user_message = data.get("message")
-
-        # if "recipe" not in user_message:
-        response = chatbot_response(user_message)
-        # else:
-        #     response = generate_recipe(user_message)
+        generate, food_items = extract_food_items(user_message)
+        if "recipe" in user_message and "generate" in user_message:
+            response = generate_recipe(user_message)
+        else:
+            response = chatbot_response(user_message)
 
         # res, message = update_and_check_data()
         # if not res:
