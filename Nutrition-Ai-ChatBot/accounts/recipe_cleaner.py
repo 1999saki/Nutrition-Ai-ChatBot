@@ -1,7 +1,7 @@
 from os.path import join
 from transformers import pipeline
 
-import spacy
+# import spacy
 import torch
 from django.conf import settings
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
@@ -40,18 +40,18 @@ def generate_recipe(input_ingredients):
     return generated_recipe
 
 
-# Load the spaCy English model
-try:
-    nlp = spacy.load("en_core_web_sm")
-except OSError:
-    # If the model is not found, download it and then load it
-    import spacy.cli
-
-    spacy.cli.download("en_core_web_sm")
-    nlp = spacy.load("en_core_web_sm")
-
-# Define a set of keywords related to generating recipes
-RECIPE_KEYWORDS = {'recipe', 'cook', 'prepare', 'make', 'generate', 'create'}
+# # Load the spaCy English model
+# try:
+#     nlp = spacy.load("en_core_web_sm")
+# except OSError:
+#     # If the model is not found, download it and then load it
+#     import spacy.cli
+#
+#     spacy.cli.download("en_core_web_sm")
+#     nlp = spacy.load("en_core_web_sm")
+#
+# # Define a set of keywords related to generating recipes
+# RECIPE_KEYWORDS = {'recipe', 'cook', 'prepare', 'make', 'generate', 'create'}
 
 
 # def extract_food_items(text):
