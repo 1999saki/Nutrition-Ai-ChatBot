@@ -31,16 +31,16 @@
                     <p>Hi there 👋<br>How can I help you today?</p>
                 </li>
                 {% if default_message %}
-                    <li class="chat incoming">
-                        <span class="material-symbols-outlined">smart_toy</span>
-                        <p>{{ default_message|safe }}</p>
-                    </li>
+                <li class="chat incoming">
+                    <span class="material-symbols-outlined">smart_toy</span>
+                    <p>{{ default_message|safe }}</p>
+                </li>
                 {% endif %}
             </ul>
             <div class="chat-input">
                 <textarea placeholder="Enter a message..." spellcheck="false"
                           required></textarea>
-                <span id="send-btn" class="material-icons">send</span>
+                <span id="send-btn" class="material-symbols-rounded">send</span>
             </div>
         </div>
     </div>
