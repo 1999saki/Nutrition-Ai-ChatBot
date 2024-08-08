@@ -379,6 +379,8 @@ from nltk.stem import WordNetLemmatizer
 # from .recipe_cleaner import get_recipe
 from os.path import dirname, abspath, join
 
+nltk.download('wordnet')
+
 BASE_DIR = dirname(dirname(abspath(__file__)))
 CONTENT_DIR = join(BASE_DIR, 'content/static')
 
