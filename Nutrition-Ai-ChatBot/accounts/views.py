@@ -34,6 +34,7 @@ from .forms import (
 )
 from .models import Activation
 from .recipe_cleaner import *
+from .gen_model import *
 from .utils import (
     send_activation_email, send_reset_password_email, send_forgotten_username_email,
     send_activation_change_email,
@@ -487,7 +488,7 @@ def chat_handler(request, data=None):
             response = format_diet_chart_html(diet_chart)
             return JsonResponse({'response': response, 'render': True})
         else:
-            response = chatbot_response(user_message)
+            response = generate_response([user_message])
 
         # res, message = update_and_check_data()
         # if not res:
