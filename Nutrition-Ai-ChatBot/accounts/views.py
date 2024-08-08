@@ -1,10 +1,9 @@
 import json
 
-from django.conf import settings
-from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, REDIRECT_FIELD_NAME
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import (
     LogoutView as BaseLogoutView, PasswordChangeView as BasePasswordChangeView,
@@ -26,6 +25,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import View, FormView
 from django.views.generic.base import TemplateView
 
+from .food_chart import *
 from .forms import (
     SignInViaUsernameForm, SignInViaEmailForm, SignInViaEmailOrUsernameForm, SignUpForm,
     RestorePasswordForm, RestorePasswordViaEmailOrUsernameForm, RemindUsernameForm,
@@ -459,12 +459,31 @@ def chatbot_response(user_message):
 
 @csrf_exempt
 def chat_handler(request, data=None):
+    if not request.user.is_authenticated:
+        # Handle the case where the user is not logged in
+        return redirect('login')  # Redirect to login or handle accordingly
+    activation_record = get_object_or_404(Activation, user=request.user)
+
     if request.method == 'POST':
         data = json.loads(request.body)
         user_message = data.get("message")
-        generate, food_items = extract_food_items(user_message)
-        if "recipe" in user_message and "generate" in user_message:
-            response = generate_recipe(user_message)
+        user_message = user_message.lower()
+
+        if "/generate_recipe" in user_message:
+            try:
+                food_items = user_message.split('/generate_recipe')[-1].split(',')
+                response = generate_recipe(food_items)
+            except:
+                response = "There is some issue in the passed food items."
+
+        elif "/food_chart" in user_message:
+            daily_calories, macros, diet_chart = calculate_tdee_and_macros_and_generate_diet_chart(
+                activation_record.gender, int(activation_record.weight),
+                int(activation_record.height), int(activation_record.age),
+                activation_record.activity_level,
+                activation_record.goal, activation_record.food_options)
+            response = format_diet_chart_html(diet_chart)
+            return JsonResponse({'response': response, 'render': True})
         else:
             response = chatbot_response(user_message)
 
@@ -497,6 +516,8 @@ def submit_form(request):
         age = data.get('age')
         height = data.get('height')
         weight = data.get('weight')
+        activity_level = data.get('activity_level')
+        food_options = data.get('food_options')
 
         user, created = User.objects.get_or_create(username=name)
 
@@ -507,8 +528,8 @@ def submit_form(request):
         activation.goal = goal
         activation.weight = weight
         activation.gender = gender
+        activation.activity_level = activity_level
+        activation.food_options = food_options
         activation.save()
-
-        return redirect('chat')
 
     return JsonResponse({'status': 'fail'}, status=400)

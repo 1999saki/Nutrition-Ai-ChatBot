@@ -395,7 +395,7 @@
             })
             .then(response => {
                 if (response.ok) {
-                    window.location.href = '/chat/';  // Fallback client-side redirection if server-side fails
+                    window.location.href = response.url;  // Fallback client-side redirection if server-side fails
                 } else {
                     return response.json().then(data => {
                         console.error('Error:', data);

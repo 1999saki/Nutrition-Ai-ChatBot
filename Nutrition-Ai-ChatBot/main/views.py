@@ -1,4 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render
+
+from urllib.parse import unquote
 from django.shortcuts import redirect
 from django.views.generic import TemplateView
 
@@ -20,6 +23,12 @@ class UserInputPageView(LoginRequiredMixin, TemplateView):
 
 class IndexPageView(TemplateView):
     template_name = 'main/index.html'
+
+    def get(self, request, *args, **kwargs):
+        default_message = request.GET.get('default_message', None)
+        if default_message:
+            default_message = unquote(default_message)
+        return render(request, self.template_name, {'default_message': default_message})
 
 
 class ChangeLanguageView(TemplateView):

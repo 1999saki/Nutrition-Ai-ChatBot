@@ -36,7 +36,9 @@ const generateResponse = (chatElement,inlinemsg) => {
     fetch(API_URL, requestOptions)
         .then(res => res.json())
         .then(data => {
-            if (data.response) {
+            if (data.response && data.render) {
+                messageElement.innerHTML = data.response;
+            }else if (data.response) {
                 messageElement.textContent = data.response;
             } else {
                 messageElement.classList.add("error");
