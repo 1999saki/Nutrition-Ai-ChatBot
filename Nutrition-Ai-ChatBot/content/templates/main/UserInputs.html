@@ -359,13 +359,20 @@
         }
 
         function selectFood(food) {
-            const options = document.querySelectorAll('.food-option');
-            options.forEach(option => {
-                option.classList.remove('selected');
-            });
-            document.querySelector(`#${food}`).parentNode.classList.add('selected');
-            document.querySelector(`#${food}`).checked = true;
-        }
+    const options = document.querySelectorAll('.food-option');
+    options.forEach(option => {
+        option.classList.remove('selected');
+    });
+
+    const selectedOption = document.querySelector(`#${food}`);
+
+    if (selectedOption) {
+        selectedOption.parentNode.classList.add('selected');
+        selectedOption.checked = true;
+    } else {
+        console.error(`Element with ID ${food} not found.`);
+    }
+}
 
 		 function submitForm() {
             const name = document.getElementById('nameInput').value;
