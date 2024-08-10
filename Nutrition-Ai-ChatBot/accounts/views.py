@@ -462,10 +462,6 @@ def chatbot_response(user_message):
 
 @csrf_exempt
 def chat_handler(request, data=None):
-    if not request.user.is_authenticated:
-        # Handle the case where the user is not logged in
-        return redirect('login')  # Redirect to login or handle accordingly
-    activation_record = get_object_or_404(Activation, user=request.user)
 
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -534,5 +530,7 @@ def submit_form(request):
         activation.activity_level = activity_level
         activation.food_options = food_options
         activation.save()
+
+        return redirect('chat')
 
     return JsonResponse({'status': 'fail'}, status=400)
