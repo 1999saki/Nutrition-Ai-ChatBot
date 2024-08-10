@@ -1,3 +1,6 @@
+from IPython.display import display, HTML
+
+
 class FoodItem:
     def __init__(self, name, protein_per_100g, fat_per_100g, carbs_per_100g,
                  calories_per_100g, category):
@@ -151,10 +154,27 @@ def generate_diet_chart(user_requirements, food_database):
                     total_carbs += (food_item.carbs_per_100g / 100) * 100
                     break
 
+        if meal == "breakfast":
+            for food_item in food_database:
+                if food_item.name == "Fruits":
+                    amount = calculate_food_amount(
+                        user_requirements["carbs"] * meal_ratios[meal],
+                        food_item.carbs_per_100g)
+                    diet_chart[meal].append(
+                        {"food": food_item.name, "amount": round(amount)})
+                    total_calories += (food_item.calories_per_100g / 100) * amount
+                    total_protein += (food_item.protein_per_100g / 100) * amount
+                    total_fat += (food_item.fat_per_100g / 100) * amount
+                    total_carbs += (food_item.carbs_per_100g / 100) * amount
+                    break
+
         for food_item in food_database:
-            if meal in ["breakfast", "snacks"] and food_item.name == "Rice":
+            if meal == "breakfast" and food_item.name == "Rice":
                 continue
             if meal == "breakfast" and food_item.name == "Chicken Breast":
+                continue
+            if meal == "snacks" and (
+                    food_item.name == "Soya Chunks" or food_item.name == "Tofu"):
                 continue
 
             if total_calories >= meal_calories and total_protein >= meal_protein:
@@ -164,10 +184,14 @@ def generate_diet_chart(user_requirements, food_database):
             calories = (food_item.calories_per_100g / 100) * amount
             if total_calories + calories > meal_calories:
                 amount = ((
-                                  meal_calories - total_calories) / food_item.calories_per_100g) * 100
+                                      meal_calories - total_calories) / food_item.calories_per_100g) * 100
                 calories = meal_calories - total_calories
+            if str(round(amount)).endswith(".00"):
+                result = str(amount)[:-3]
+            else:
+                result = amount
 
-            diet_chart[meal].append({"food": food_item.name, "amount": round(amount, 2)})
+            diet_chart[meal].append({"food": food_item.name, "amount": round(amount)})
             total_calories += calories
             total_protein += (food_item.protein_per_100g / 100) * amount
             total_fat += (food_item.fat_per_100g / 100) * amount
@@ -192,10 +216,123 @@ def print_diet_chart(diet_chart):
             first_row = False
 
 
-def format_diet_chart_html(diet_chart):
+def get_second_table(food):
+    # HTML table as a string
+    html_table = """
+    <table class='table'>
+        <thead style="background-color: #9A0EEA;">
+            <tr>
+                <th style="color:white">Food in Meal Plan</th>
+                 <th style="color:white">Alternate Foods</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>4 or 5 egg whites</td>
+                <td>50g chicken (or) 25g soya chunks (or) 1/2 scoop whey</td>
+            </tr>
+            <tr style="background-color: #F2F2F2;">
+                <td>1 whole egg (if given in meal plan)</td>
+                <td>25g chicken (or) 12.5g soya chunks (or) 12.5g dried fish</td>
+            </tr>
+            <tr>
+                <td>100g chicken</td>
+                <td>1 whole egg + 5 egg whites (or) 50g soya chunks (or) 1 scoop whey (or) 100g fish (or) 200g paneer (or) 40g dried fish</td>
+            </tr>
+            <tr style="background-color: #F2F2F2;">
+                <td>50g soya chunks</td>
+                <td>1 whole egg + 5 egg whites (or) 1 scoop whey (or) 100g chicken (or) 200g cottage cheese (or) 40g dried fish (or) 100g fish (or) 50g channa (or) 100ml curd</td>
+            </tr>
+            <tr>
+                <td>200ml milk</td>
+                <td>200ml curd (or) 100g cheese (or) 1 whole egg (or) 200g cottage cheese</td>
+            </tr>
+            <tr style="background-color: #F2F2F2;">
+                <td>100g rice</td>
+                <td>1 chappathi (or) 1 Medium size Dosa (or) 2 Idlies (or) 2 bread slices (or) 25g dry rice (or) 17g noodles (or) 25g macaroni (or) 100g oats</td>
+            </tr>
+            <tr>
+                <td>1 scoop whey</td>
+                <td>50g chicken (or) 25g soya chunks (or) 1 whole egg (or) 100g cottage cheese (or) 200ml curd (or) 50g cheese</td>
+            </tr>
+            <tr style="background-color: #F2F2F2;">
+                <td>1 chappathi</td>
+                <td>100g rice (or) 200ml curd (or) 25g oats (or) 1/2 scoop whey</td>
+            </tr>
+            <tr>
+                <td>Fruits</td>
+                <td>any fruits are fine (if apple or banana then half of specified serving)</td>
+            </tr>
+            <tr style="background-color: #F2F2F2;">
+                <td>Vegetables</td>
+                <td>any vegetables are fine</td>
+            </tr>
+            <tr>
+                <td>100g channa (if given in meal plan)</td>
+                <td>same quantity of sprouts (or) bengal gram (or) green peas (or) any nuts (or) peanut butter</td>
+            </tr>
+        </tbody>
+    </table>
+    """
+
+    html_table_veg = """
+    <table class='table'>
+        <thead style="background-color: #9A0EEA;">
+            <tr style="color: white;">
+               <th style="color:white">Food in Meal Plan</th>
+                 <th style="color:white">Alternate Foods</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <tr style="background-color: #F2F2F2;">
+                <td>50g soya chunks</td>
+                <td>1 scoop whey(or) 200g cottage cheese (or) 50g channa (or) 100ml curd</td>
+            </tr>
+            <tr>
+                <td>200ml milk</td>
+                <td>200ml curd (or) 100g cheese  (or) 40g cottage cheese</td>
+            </tr>
+            <tr style="background-color: #F2F2F2;">
+                <td>100g rice</td>
+                <td>1 chappathi (or) 1 Medium size Dosa (or) 2 Idlies (or) 2 bread slices (or) 17g noodles (or) 25g macaroni (or) 100g oats</td>
+            </tr>
+            <tr>
+                <td>1 scoop whey</td>
+                <td> 25g soya chunks (or) 100g cottage cheese (or) 200ml curd (or) 50g cheese</td>
+            </tr>
+            <tr style="background-color: #F2F2F2;">
+                <td>1 chappathi</td>
+                <td>100g rice (or) 200ml curd (or) 25g oats (or) 1/2 scoop whey</td>
+            </tr>
+            <tr>
+                <td>Fruits</td>
+                <td>any fruits are fine (if apple or banana then half of specified serving)</td>
+            </tr>
+            <tr style="background-color: #F2F2F2;">
+                <td>Vegetables</td>
+                <td>any vegetables are fine</td>
+            </tr>
+            <tr>
+                <td>100g channa (if given in meal plan)</td>
+                <td>same quantity of sprouts (or) bengal gram (or) green peas (or) any nuts (or) peanut butter</td>
+            </tr>
+        </tbody>
+    </table>
+    """
+    if food == "veg":
+        return html_table_veg
+    else:
+        return html_table
+
+
+def format_diet_chart_html(diet_chart, daily_calories, food):
     # Start the HTML string
-    message = """
-        <p>This diet chart is based on your height, weight, age, and eating preferences.</p>
+    message = f"""
+        <div>
+            This diet chart is based on your height, weight, age, and eating preferences.
+            Daily calories you have to take {daily_calories}.
+        </div>
         <table class='table'>
             <tr>
                 <th>Meal</th>
@@ -223,6 +360,7 @@ def format_diet_chart_html(diet_chart):
     message += """
         </table>
     """
+    message += get_second_table(food)
     return message
 
 

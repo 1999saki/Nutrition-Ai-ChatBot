@@ -7,8 +7,8 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 CONTENT_DIR = join(settings.BASE_DIR, 'content/fine_tuned')
 
 tokenizer = AutoTokenizer.from_pretrained(CONTENT_DIR)
-
 model = AutoModelForCausalLM.from_pretrained(CONTENT_DIR)
+
 
 # Function to generate a response
 def generate_response(prompt, max_length=150, num_beams=5, early_stopping=True):

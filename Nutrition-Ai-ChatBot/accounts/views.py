@@ -462,13 +462,22 @@ def chatbot_response(user_message):
 
 @csrf_exempt
 def chat_handler(request, data=None):
+    activation_record = get_object_or_404(Activation, user=request.user)
 
     if request.method == 'POST':
         data = json.loads(request.body)
         user_message = data.get("message")
         user_message = user_message.lower()
 
-        if "/generate_recipe" in user_message:
+        if "hi" in user_message or "hello" in user_message:
+            response = "Hello!"
+        elif "how are you" in user_message:
+            response = "I am fine! How are you?"
+        elif "bye" in user_message:
+            response = "Bye Have a nice day ;)"
+        elif "ok" in user_message or "okay" in user_message:
+            response = "Believe in yourself! Every step counts, no matter how small."
+        elif "/generate_recipe" in user_message:
             try:
                 food_items = user_message.split('/generate_recipe')[-1].split(',')
                 response = generate_recipe(food_items)
@@ -481,7 +490,7 @@ def chat_handler(request, data=None):
                 int(activation_record.height), int(activation_record.age),
                 activation_record.activity_level,
                 activation_record.goal, activation_record.food_options)
-            response = format_diet_chart_html(diet_chart)
+            response = format_diet_chart_html(diet_chart, daily_calories, activation_record.food_options)
             return JsonResponse({'response': response, 'render': True})
         else:
             response = generate_response([user_message])
