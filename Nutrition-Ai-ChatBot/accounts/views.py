@@ -469,7 +469,7 @@ def chat_handler(request, data=None):
         user_message = data.get("message")
         user_message = user_message.lower()
 
-        if "hi" in user_message or "hello" in user_message:
+        if "hello" in user_message:
             response = "Hello!"
         elif "how are you" in user_message:
             response = "I am fine! How are you?"
