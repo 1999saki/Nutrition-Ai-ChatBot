@@ -214,7 +214,7 @@
         </div>
         <div class="food-option" onclick="selectFood('nonVeg')">
             <span>Non-Veg</span>
-            <input type="radio" name="food" id="non_veg" value="nonVeg">
+            <input type="radio" name="food" id="nonVeg" value="nonVeg">
         </div>
 
         <p class="warning" id="foodWarning">Please select a food preference.</p>
@@ -359,20 +359,20 @@
         }
 
         function selectFood(food) {
-    const options = document.querySelectorAll('.food-option');
-    options.forEach(option => {
-        option.classList.remove('selected');
-    });
+            const options = document.querySelectorAll('.food-option');
+            options.forEach(option => {
+                option.classList.remove('selected');
+            });
 
-    const selectedOption = document.querySelector(`#${food}`);
+            const selectedOption = document.querySelector(`#${food}`);
 
-    if (selectedOption) {
-        selectedOption.parentNode.classList.add('selected');
-        selectedOption.checked = true;
-    } else {
-        console.error(`Element with ID ${food} not found.`);
-    }
-}
+            if (selectedOption) {
+                selectedOption.parentNode.classList.add('selected');
+                selectedOption.checked = true;
+            } else {
+                console.error(`Element with ID ${food} not found.`);
+            }
+        }
 
 		 function submitForm() {
             const name = document.getElementById('nameInput').value;
