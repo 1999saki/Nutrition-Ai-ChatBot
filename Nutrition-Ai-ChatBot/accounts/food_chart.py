@@ -184,7 +184,7 @@ def generate_diet_chart(user_requirements, food_database):
             calories = (food_item.calories_per_100g / 100) * amount
             if total_calories + calories > meal_calories:
                 amount = ((
-                                      meal_calories - total_calories) / food_item.calories_per_100g) * 100
+                                  meal_calories - total_calories) / food_item.calories_per_100g) * 100
                 calories = meal_calories - total_calories
             if str(round(amount)).endswith(".00"):
                 result = str(amount)[:-3]
@@ -361,6 +361,38 @@ def format_diet_chart_html(diet_chart, daily_calories, food):
         </table>
     """
     message += get_second_table(food)
+    message += """
+        <table class='table'>    
+        <thead style="background-color: #9A0EEA;">
+            <th style="color: white;">Frequency</th>
+           <th style="color: white;">Cheat meal</th>
+          </thead>
+          <tr>
+            <td>Everyday</td>
+            <td>
+              40g of any snack <b>or</b> 100g of ice-cream
+            </td>
+          </tr>
+          <tr>
+            <td>2 days once</td>
+            <td>
+              60g of any snacks <b>or</b> 150g ice cream <b>or</b> 200g milkshake <b>or</b> 75g cake
+            </td>
+          </tr>
+          <tr>
+            <td>3 days once</td>
+            <td>
+              80g of any snacks <b>or</b> 200g ice cream <b>or</b> 100g cake <b>or</b> 250g of any of these (biryani, fried rice, fried noodles) <b>or</b> 100g pizza
+            </td>
+          </tr>
+          <tr>
+            <td>Weekly 2 times</td>
+            <td>
+              140g of any snacks <b>or</b> 350g ice cream <b>or</b>  175g cake <b>or</b> 450g of any of these (biryani, fried rice, fried noodles) <b>or</b> > 200g pizza <b>or</b> Buffet (only buffet should be eaten for that entire day)
+            </td>
+          </tr>
+        </table>
+        """
     return message
 
 
