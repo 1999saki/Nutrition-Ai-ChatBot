@@ -20,7 +20,7 @@ To interact with Healthy Bite, you can use the following commands:
   - Generates a personalized diet chart based on your preferences such as age, weight, dietary choices, and activity level.
   
 - **/generate_recipe**
-  - Provides a healthy recipe based on the list of ingredients you provide.
+  - Provides a healthy recipe based on the list of ingredients you provide. It can be used as customised diet planner.
 
 ### Example Queries
 - "What should I eat for breakfast if I want to lose weight?"
